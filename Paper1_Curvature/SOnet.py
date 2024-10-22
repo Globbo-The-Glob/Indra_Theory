@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import math 
 import csv
 import colour 
-
+import torch
 
 '''
 
@@ -68,12 +68,12 @@ class Net:
         state = self.state
         n = self.n
         # RK4 coeffs
-        k1 = RK4Coeffs(Adj,n,state,0)
-        k2 = RK4Coeffs(Adj,n,state+k1*(dt/2),dt/2)
-        k3 = RK4Coeffs(Adj,n,state+k2*(dt/2),dt/2)
-        k4 = RK4Coeffs(Adj,n,state+k3*dt,dt)
+        k1 = RK4Coeffs(Adj,n,state)
+        k2 = RK4Coeffs(Adj,n,state+k1/2)
+        k3 = RK4Coeffs(Adj,n,state+k2/2)
+        k4 = RK4Coeffs(Adj,n,state+k3)
         # RK4 baby!
-        self.state = state + dt*k4 # + dt / 6 * ( k1 + 2 * k2 + 2 * k3 + 
+        self.state = state + dt*k4 + dt / 6 * ( k1 + 2 * k2 + 2 * k3 + k4)
         
         
         # for i in range(self.n):

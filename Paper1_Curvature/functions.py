@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import math 
 import csv
 import colour 
- 
+import torch
 
 def rgb_spectrum_line(value): # NEEDS OPACITY AND TUNING 
     if value == 0: 
@@ -19,11 +19,11 @@ def rgb_spectrum_line(value): # NEEDS OPACITY AND TUNING
         rgb = abs(value)*np.array([0.0,0.0,1.0]) # blue >0
     return rgb
  
-def RK4Coeffs(Adj,n,state,dt):
-    deltaPhase = np.dot(Adj,state[0:n]) - state[0:n]# Only using first half of state variable
+def RK4Coeffs(Adj,n,state):
+    deltaPhase = np.dot(Adj,state[0:n]) - state[0:n]# Dot adj w/ state vector (Only using first half of state vector for phase)
     deltaNat = 1/n*np.sin(deltaPhase) # Kuramoto update rule for natural freq change
-    state[0:n] = state[0:n] + state[n:]*dt + deltaNat*dt# Add nats to phase 
-    #state[n:] = state[n:] +deltaNat*dt # Add acc to nats
+    state[0:n] = state[0:n] + state[n:] + deltaNat# Add nats to phase 
+    state[n:] = state[n:] + deltaNat # Add acc to nats
     return state 
         
 def RunAndPlot(time,net,T,res,N,k,var,mean,connectivity):
